@@ -1,10 +1,7 @@
 package assessment.recipes.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,7 +9,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "recipes", indexes = @Index(columnList = "id"))
-public class Recipes {
+@Builder
+public class Recipe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
