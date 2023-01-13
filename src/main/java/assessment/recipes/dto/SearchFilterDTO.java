@@ -11,7 +11,8 @@ public class SearchFilterDTO {
 
     private String recipeName;
 
-    private String ingredients;
+    private String includedIngredients;
+    private String excludedIngredients;
 
     private String instructions;
 
