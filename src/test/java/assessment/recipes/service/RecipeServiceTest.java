@@ -1,7 +1,9 @@
 package assessment.recipes.service;
 
 import assessment.recipes.dto.RecipeDTO;
+import assessment.recipes.dto.ResponseDTO;
 import assessment.recipes.entity.Recipe;
+import assessment.recipes.exception.RecipeException;
 import assessment.recipes.repository.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +13,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -55,6 +60,39 @@ class RecipeServiceTest {
         var returnResponse = recipeService.createRecipe(recipeDTO);
         assertNotNull(returnResponse.getMessage(), () -> "Recipe Created!");
         verify(recipeRepository, times(1)).save(Mockito.any(Recipe.class));
+    }
+
+    @Test
+    void shouldNotCreateRecipeAndThenThrowRecipeException() {
+        var recipeDTO = new RecipeDTO();
+        Mockito.when(recipeRepository.save(any(Recipe.class))).thenThrow(RecipeException.class);
+        assertThrows(RecipeException.class,
+                () -> {
+                    recipeService.createRecipe(recipeDTO);
+                }
+            );
+    }
+
+    @Test
+    void shouldDeleteRecipe() {
+        var recipeId = "1";
+        Recipe recipe = new Recipe();
+        Mockito.when(recipeRepository.findById(any())).thenReturn(Optional.of(recipe));
+        var returnResponse = recipeService.deleteRecipe(recipeId);
+        Mockito.verify(recipeRepository, times(1)).delete(recipe);
+        assertEquals(returnResponse.getMessage(),"Recipe Deleted!");
+
+    }
+
+    @Test
+    void shouldNotDeleteRecipeAndThrowsException() {
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
+        Recipe recipe = new Recipe();
+        var msg = assertThrows(RecipeException.class,
+                () -> recipeService.deleteRecipe("1")
+        ).getMessage();
+        assertEquals(msg,"Recipe not found");
+        Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
     }
 
 }

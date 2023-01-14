@@ -19,10 +19,10 @@ public class Recipe {
     @Column(name = "recipe_name", nullable = false)
     private String recipeName;
 
-    @Column(name = "ingredients", nullable = false)
+    @Column(name = "ingredients", nullable = false, columnDefinition="TEXT")
     private String ingredients;
 
-    @Column(name = "instructions", nullable = false)
+    @Column(name = "instructions", nullable = false, columnDefinition="TEXT")
     private String instructions;
 
     @Column(name = "number_serving", nullable = false)

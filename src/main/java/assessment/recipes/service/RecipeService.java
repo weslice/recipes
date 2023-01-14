@@ -2,6 +2,7 @@ package assessment.recipes.service;
 
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
+import assessment.recipes.exception.RecipeException;
 import assessment.recipes.repository.RecipeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,18 @@ public class RecipeService {
                     Collections.emptyList(),
                     "Recipe Created!");
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            throw new RecipeException(e.getMessage());
         }
     }
 
+    public ResponseDTO deleteRecipe(String recipeId) {
+        var recipe = recipeRepository.findById(Long.valueOf(recipeId)).orElse(null);
+        if (recipe == null)
+            throw new RecipeException("Recipe not found");
+
+        recipeRepository.delete(recipe);
+        return new ResponseDTO(Collections.emptyList(),
+                Collections.emptyList(),
+                "Recipe Deleted!");
+    }
 }
