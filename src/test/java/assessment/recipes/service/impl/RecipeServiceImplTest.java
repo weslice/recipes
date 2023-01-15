@@ -1,7 +1,6 @@
-package assessment.recipes.service;
+package assessment.recipes.service.impl;
 
 import assessment.recipes.dto.RecipeDTO;
-import assessment.recipes.dto.ResponseDTO;
 import assessment.recipes.entity.Recipe;
 import assessment.recipes.exception.RecipeException;
 import assessment.recipes.repository.RecipeRepository;
@@ -15,7 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -23,9 +23,9 @@ import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
-class RecipeServiceTest {
+class RecipeServiceImplTest {
 
-    private  RecipeService recipeService;
+    private RecipeServiceImpl recipeServiceImpl;
 
     @Mock
     private RecipeRepository recipeRepository;
@@ -33,7 +33,7 @@ class RecipeServiceTest {
     @BeforeEach
     public void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        this.recipeService = new RecipeService(recipeRepository);
+        this.recipeServiceImpl = new RecipeServiceImpl(recipeRepository);
     }
 
     private RecipeDTO createRecipeDTO() {
@@ -57,8 +57,8 @@ class RecipeServiceTest {
         var recipeDTO = createRecipeDTO();
         Recipe recipeSave = new Recipe();
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(recipeSave);
-        var returnResponse = recipeService.createRecipe(recipeDTO);
-        assertNotNull(returnResponse.getMessage(), () -> "Recipe Created!");
+        var returnResponse = recipeServiceImpl.createRecipe(recipeDTO);
+        assertEquals(returnResponse.getMessage(),"Recipe Created!");
         verify(recipeRepository, times(1)).save(Mockito.any(Recipe.class));
     }
 
@@ -68,9 +68,9 @@ class RecipeServiceTest {
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenThrow(RecipeException.class);
         assertThrows(RecipeException.class,
                 () -> {
-                    recipeService.createRecipe(recipeDTO);
+                    recipeServiceImpl.createRecipe(recipeDTO);
                 }
-            );
+        );
     }
 
     @Test
@@ -78,20 +78,57 @@ class RecipeServiceTest {
         var recipeId = "1";
         Recipe recipe = new Recipe();
         Mockito.when(recipeRepository.findById(any())).thenReturn(Optional.of(recipe));
-        var returnResponse = recipeService.deleteRecipe(recipeId);
+        var returnResponse = recipeServiceImpl.deleteRecipe(recipeId);
         Mockito.verify(recipeRepository, times(1)).delete(recipe);
         assertEquals(returnResponse.getMessage(),"Recipe Deleted!");
-
     }
 
     @Test
     void shouldNotDeleteRecipeAndThrowsException() {
         Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
-        Recipe recipe = new Recipe();
         var msg = assertThrows(RecipeException.class,
-                () -> recipeService.deleteRecipe("1")
+                () -> recipeServiceImpl.deleteRecipe("1")
         ).getMessage();
         assertEquals(msg,"Recipe not found");
+        Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
+    }
+
+    @Test
+    void shouldUpdateRecipeAndReturnRecipeResponseDTOWithTheUpdatedValues() {
+        Recipe recipe = new Recipe();
+        var recipeDTO = new RecipeDTO();
+        recipeDTO.setId(1L);
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
+        Recipe recipeSave = new Recipe();
+        Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(recipeSave);
+        var returnResponse = recipeServiceImpl.updateRecipe(recipeDTO);
+        assertEquals(returnResponse.getMessage(),"Recipe Updated!");
+        verify(recipeRepository, times(1)).save(Mockito.any(Recipe.class));
+    }
+
+    @Test
+    void shouldGiveRecipeExeptionWhenTryingToUpdateRecipeWithInvalidRecipeId() {
+        var recipeDTO = new RecipeDTO();
+        recipeDTO.setId(1L);
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
+        var msg = assertThrows(RecipeException.class,
+                () -> recipeServiceImpl.updateRecipe(recipeDTO)
+        ).getMessage();
+        assertEquals(msg,"Recipe not found");
+        Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
+    }
+
+    @Test
+    void shouldGiveRecipeExeptionWhenTryingToUpdateRecipeWithInvalidValues() {
+        var recipeDTO = new RecipeDTO();
+        Recipe recipe = new Recipe();
+        recipeDTO.setId(1L);
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
+        Mockito.when(recipeRepository.save(recipe)).thenThrow(RecipeException.class);
+
+        assertThrows(RecipeException.class,
+                () -> recipeServiceImpl.updateRecipe(recipeDTO)
+        ).getMessage();
         Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
     }
 

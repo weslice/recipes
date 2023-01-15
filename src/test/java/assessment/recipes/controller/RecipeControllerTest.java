@@ -22,8 +22,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -107,7 +106,7 @@ public class RecipeControllerTest {
     }
 
     @Test
-    @DisplayName("When recive a delete request then delete the Recipe and is Persisted")
+    @DisplayName("When receive a delete request then delete the Recipe and is Persisted")
     void recipeDeletedByIdThenReturnMsgConfirmationInResponseDTO() throws Exception {
         Recipe recipe = Recipe.builder()
                 .recipeName("A recipe Name")
@@ -133,17 +132,17 @@ public class RecipeControllerTest {
     }
 
     @Test
-    @DisplayName("When recive a delete request with invalid Recipe ID then return Exception")
+    @DisplayName("When receive a delete request with invalid Recipe ID then return Exception")
     void recipeDeleteWithInvalidRecipeIdThenReturnException() throws Exception {
         Recipe recipe = Recipe.builder()
                 .recipeName("A recipe Name")
-                .ingredients("Some ingredientes")
+                .ingredients("Some ingredients")
                 .instructions("A complex instruction")
                 .isVegetarian(Boolean.TRUE)
                 .numberServings(3)
                 .build();
 
-        recipe = recipeRepository.save(recipe);
+        recipeRepository.save(recipe);
 
         long invalidRecipeId = 1L;
 
@@ -158,6 +157,121 @@ public class RecipeControllerTest {
                                 .andReturn().getResponse().getContentAsString(), ResponseDTO.class);
 
         assertEquals(responseDTO.getMessage(),"Recipe not found");
+    }
+
+    @Test
+    @DisplayName("When receive an PUT request to update recipe then it is persisted")
+    void recipePutRequestUpdateRecipeThenPersist() throws Exception {
+        Recipe recipe = Recipe.builder()
+                .recipeName("A recipe Name")
+                .ingredients("Some ingredients")
+                .instructions("A complex instruction")
+                .isVegetarian(Boolean.TRUE)
+                .numberServings(3)
+                .build();
+
+        recipe = recipeRepository.save(recipe);
+
+        RecipeDTO recipeNewValues = RecipeDTO.builder()
+                .id(recipe.getId())
+                .recipeName("Another recipe name")
+                .isVegetarian(Boolean.FALSE)
+                .instructions("Update the complex instruction")
+                .numberServings(6)
+                .ingredients("Add more ingredients")
+                .build();
+
+        ResponseDTO responseDTO = mapper
+                .readValue(
+                        mockMvc
+                                .perform(
+                                        put("/recipe/update")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(mapper.writeValueAsString(recipeNewValues))).andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("response", notNullValue()))
+                                .andExpect(jsonPath("message", equalTo("Recipe Updated!")))
+                                .andReturn()
+                                .getResponse().getContentAsString(),
+                        ResponseDTO.class);
+
+        var recipeDtoUpdated = mapper.convertValue(responseDTO.getResponse(), RecipeDTO.class);
+
+        assertEquals(recipeDtoUpdated.getId(), recipe.getId());
+        assertEquals(recipeDtoUpdated.getRecipeName(), recipeNewValues.getRecipeName());
+        assertEquals(recipeDtoUpdated.getInstructions(), recipeNewValues.getInstructions());
+    }
+    @Test
+    @DisplayName("When receive an PUT request to update with invalid Recipe ID then return Exception")
+    void recipePutRequestUpdateRecipeWithInvalidIdThenReturnException() throws Exception {
+        Recipe recipe = Recipe.builder()
+                .recipeName("A recipe Name")
+                .ingredients("Some ingredients")
+                .instructions("A complex instruction")
+                .isVegetarian(Boolean.TRUE)
+                .numberServings(3)
+                .build();
+
+        recipe = recipeRepository.save(recipe);
+
+        RecipeDTO recipeNewValues = RecipeDTO.builder()
+                .id(1L)
+                .recipeName("Another recipe name")
+                .isVegetarian(Boolean.FALSE)
+                .instructions("Update the complex instruction")
+                .numberServings(6)
+                .ingredients("Add more ingredients")
+                .build();
+
+        ResponseDTO responseDTO = mapper
+                .readValue(
+                        mockMvc
+                                .perform(
+                                        put("/recipe/update")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(mapper.writeValueAsString(recipeNewValues))).andDo(print())
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("response", nullValue()))
+                                .andExpect(jsonPath("errors", notNullValue())).andDo(print())
+                                .andReturn()
+                                .getResponse().getContentAsString(),
+                        ResponseDTO.class);
+        assertEquals(responseDTO.getMessage(),"Recipe not found");
+    }
+
+    @Test
+    @DisplayName("When receive an PUT request to update with invalid Data Values then return Exception")
+    void recipePutRequestUpdateRecipeWithInvalidDataValuesThenReturnException() throws Exception {
+        Recipe recipe = Recipe.builder()
+                .recipeName("A recipe Name")
+                .ingredients("Some ingredients")
+                .instructions("A complex instruction")
+                .isVegetarian(Boolean.TRUE)
+                .numberServings(3)
+                .build();
+
+        recipe = recipeRepository.save(recipe);
+
+        RecipeDTO recipeNewValues = RecipeDTO.builder()
+                .id(recipe.getId())
+                .recipeName(null)
+                .ingredients("Add more ingredients")
+                .build();
+
+        ResponseDTO responseDTO = mapper
+                .readValue(
+                        mockMvc
+                                .perform(
+                                        put("/recipe/update")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(mapper.writeValueAsString(recipeNewValues))).andDo(print())
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("response", nullValue()))
+                                .andExpect(jsonPath("errors", notNullValue())).andDo(print())
+                                .andReturn()
+                                .getResponse().getContentAsString(),
+                        ResponseDTO.class);
+        assertEquals(responseDTO.getMessage(),"not-null property references a null or transient value : assessment.recipes.entity.Recipe.instructions");
     }
 
 

@@ -37,4 +37,14 @@ public class RecipeDTO implements Serializable {
                 .isVegetarian(recipeDTO.getIsVegetarian()).build();
     }
 
+    public static RecipeDTO convertEntityToDTO(Recipe recipe) {
+        return RecipeDTO.builder()
+                .id(recipe.getId())
+                .recipeName(recipe.getRecipeName())
+                .ingredients(recipe.getIngredients())
+                .instructions(recipe.getInstructions())
+                .numberServings(recipe.getNumberServings())
+                .isVegetarian(recipe.getIsVegetarian()).build();
+    }
+
 }
