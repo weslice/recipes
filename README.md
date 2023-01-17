@@ -106,7 +106,7 @@ Operator supported: EQUAL, NOT_EQUAL, LIKE, NOT_LIKE, IN, NOT_IN, BETWEEN.
 ```
 
 You can also Sort the results! Using the sort object in the Filter request:
-
+Search all vegetarian you use EQUAL and the value true and has 1 servings
 ```
 {
     "filters": [
@@ -135,8 +135,8 @@ Where Key is the entity(column) name to be sorted. You can sort ASC or DESC.
 
 For the operator field:
 
-I want to filter recipe that has flour in the ingredients description
-LIKE
+I want to filter recipe that has flour in the ingredients description 
+You use LIKE
 ```
 {
   "filters": [
@@ -189,6 +189,7 @@ The result:
 Oh now I want to filter the recipes which use oil in the instructions, but I don't want to use flour and have up to 1 to 4 servings!
 
 I want to filter recipe that has flour in the ingredients description and has "Oven" in the instructions:
+You use NOT_LIKE to exclude the ingredients and use BETEWEEN for a range.
 ```
 {
   "filters": [
@@ -209,7 +210,7 @@ I want to filter recipe that has flour in the ingredients description and has "O
       "operator": "BETWEEN",
       "field_type": "INTEGER",
       "value": 1,
-	  "value_to":8
+      "value_to":8
     }
   ],
   "sorts": [
