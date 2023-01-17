@@ -1,9 +1,10 @@
 package assessment.recipes.service.impl;
 
+import assessment.recipes.dto.RecipeCreateDTO;
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
-import assessment.recipes.dto.querry.SearchRequest;
-import assessment.recipes.dto.querry.SearchSpecification;
+import assessment.recipes.dto.specificationFilters.SearchRequest;
+import assessment.recipes.dto.specificationFilters.SearchSpecification;
 import assessment.recipes.entity.Recipe;
 import assessment.recipes.exception.RecipeException;
 import assessment.recipes.repository.RecipeRepository;
@@ -22,15 +23,15 @@ public class RecipeServiceImpl implements RecipeService {
     private RecipeRepository recipeRepository;
 
     @Override
-    public ResponseDTO createRecipe(RecipeDTO recipeDTO) {
+    public ResponseDTO createRecipe(RecipeCreateDTO recipeDTO) {
         try {
-            var recipe = RecipeDTO.recipeBuilderDTOToEntity(recipeDTO);
+            var recipe = RecipeCreateDTO.recipeBuilderDTOToEntity(recipeDTO);
             recipe = recipeRepository.save(recipe);
             return new ResponseDTO(Collections.singletonMap("recipeID", recipe.getId()),
                     Collections.emptyList(),
                     "Recipe Created!");
         } catch (Exception e) {
-            throw new RecipeException(e.getMessage());
+            throw new RecipeException("Recipe not saved in the database");
         }
     }
 

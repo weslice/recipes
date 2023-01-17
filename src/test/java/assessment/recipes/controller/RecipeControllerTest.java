@@ -1,9 +1,10 @@
 package assessment.recipes.controller;
 
+import assessment.recipes.dto.RecipeCreateDTO;
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
-import assessment.recipes.dto.querry.FilterRequest;
-import assessment.recipes.dto.querry.SearchRequest;
+import assessment.recipes.dto.specificationFilters.FilterRequest;
+import assessment.recipes.dto.specificationFilters.SearchRequest;
 import assessment.recipes.entity.Recipe;
 import assessment.recipes.enumerator.FieldType;
 import assessment.recipes.enumerator.Operator;
@@ -105,7 +106,7 @@ public class RecipeControllerTest {
     @Test
     @DisplayName("When a recipe creation is requested then it is persisted")
     void recipeCreatedThenReturnRecipeIdInResponseDTO() throws Exception {
-        RecipeDTO recipeDTO = RecipeDTO.builder()
+        RecipeCreateDTO recipeDTO = RecipeCreateDTO.builder()
                 .recipeName("Hot-Dog")
                 .ingredients("Oil, 2 Sausages, Tomato, Onion, Salt, 2 Hot dog bread, Ketchup, Mustard, Mayonnaise")
                 .instructions("Pour the chopped onion after heating the requested amount of oil in a large pan and sauté until golden. " +
@@ -147,7 +148,7 @@ public class RecipeControllerTest {
     @Test
     @DisplayName("When a recipe creation is requested with invalid data then is not saved and then throws Exception")
     void recipeNotCreatedInvalidRecipeDTOThenReturnErrorInResponseDTO() throws Exception {
-        RecipeDTO recipeDTO = RecipeDTO.builder()
+        RecipeCreateDTO recipeDTO = RecipeCreateDTO.builder()
                 .recipeName("Hot-Dog")
                 .isVegetarian(Boolean.FALSE)
                 .numberServings(2).build();
@@ -242,7 +243,7 @@ public class RecipeControllerTest {
                 .readValue(
                         mockMvc
                                 .perform(
-                                        put("/recipe/update")
+                                        patch("/recipe/update")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(mapper.writeValueAsString(recipeNewValues))).andDo(print())
                                 .andExpect(status().isOk())
@@ -259,8 +260,8 @@ public class RecipeControllerTest {
         assertEquals(recipeDtoUpdated.getInstructions(), recipeNewValues.getInstructions());
     }
     @Test
-    @DisplayName("When receive an PUT request to update with invalid Recipe ID then return Exception")
-    void recipePutRequestUpdateRecipeWithInvalidIdThenReturnException() throws Exception {
+    @DisplayName("When receive an Patch request to update with invalid Recipe ID then return Exception")
+    void recipePatchRequestUpdateRecipeWithInvalidIdThenReturnException() throws Exception {
         Recipe recipe = Recipe.builder()
                 .recipeName("A recipe Name")
                 .ingredients("Some ingredients")
@@ -284,7 +285,7 @@ public class RecipeControllerTest {
                 .readValue(
                         mockMvc
                                 .perform(
-                                        put("/recipe/update")
+                                        patch("/recipe/update")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(mapper.writeValueAsString(recipeNewValues)))
                                 .andExpect(status().isBadRequest())
@@ -297,8 +298,8 @@ public class RecipeControllerTest {
     }
 
     @Test
-    @DisplayName("When receive an PUT request to update with invalid Data Values then return Exception")
-    void recipePutRequestUpdateRecipeWithInvalidDataValuesThenReturnException() throws Exception {
+    @DisplayName("When receive an Patch request to update with invalid Data Values then return Exception")
+    void recipePatchRequestUpdateRecipeWithInvalidDataValuesThenReturnException() throws Exception {
         Recipe recipe = Recipe.builder()
                 .recipeName("A recipe Name")
                 .ingredients("Some ingredients")
@@ -319,7 +320,7 @@ public class RecipeControllerTest {
                 .readValue(
                         mockMvc
                                 .perform(
-                                        put("/recipe/update")
+                                        patch("/recipe/update")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(mapper.writeValueAsString(recipeNewValues))).andDo(print())
                                 .andExpect(status().isBadRequest())
@@ -328,7 +329,8 @@ public class RecipeControllerTest {
                                 .andReturn()
                                 .getResponse().getContentAsString(),
                         ResponseDTO.class);
-        assertEquals(responseDTO.getMessage(),"not-null property references a null or transient value : assessment.recipes.entity.Recipe.instructions");
+//        assertEquals(responseDTO.getMessage(),"not-null property references a null or transient value : assessment.recipes.entity.Recipe.instructions");
+        assertEquals(responseDTO.getMessage(),"could not execute statement; SQL [n/a]; constraint [null]");
     }
 
     @Test

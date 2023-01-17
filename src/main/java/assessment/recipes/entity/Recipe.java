@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "recipes", indexes = @Index(columnList = "id"))
+@Table(name = "recipe", indexes = @Index(columnList = "id"))
 @Builder
 public class Recipe {
 

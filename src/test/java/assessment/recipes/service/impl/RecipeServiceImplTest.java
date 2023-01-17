@@ -1,9 +1,10 @@
 package assessment.recipes.service.impl;
 
+import assessment.recipes.dto.RecipeCreateDTO;
 import assessment.recipes.dto.RecipeDTO;
-import assessment.recipes.dto.querry.FilterRequest;
-import assessment.recipes.dto.querry.SearchRequest;
-import assessment.recipes.dto.querry.SearchSpecification;
+import assessment.recipes.dto.specificationFilters.FilterRequest;
+import assessment.recipes.dto.specificationFilters.SearchRequest;
+import assessment.recipes.dto.specificationFilters.SearchSpecification;
 import assessment.recipes.entity.Recipe;
 import assessment.recipes.enumerator.FieldType;
 import assessment.recipes.enumerator.Operator;
@@ -72,8 +73,8 @@ class RecipeServiceImplTest {
                 .build();
     }
 
-    private RecipeDTO createRecipeDTO() {
-        RecipeDTO recipeDTO = new RecipeDTO();
+    private RecipeCreateDTO createRecipeDTO() {
+        RecipeCreateDTO recipeDTO = new RecipeCreateDTO();
         recipeDTO.setRecipeName("Lemon Pie");
         recipeDTO.setIngredients("1 cup sugar, " +
                 "3 tablespoons all-purpose flour, " +
@@ -102,7 +103,7 @@ class RecipeServiceImplTest {
     @Test
     @DisplayName("Should not create recipe and then throw RecipeException")
     void shouldNotCreateRecipeAndThenThrowRecipeException() {
-        var recipeDTO = new RecipeDTO();
+        var recipeDTO = new RecipeCreateDTO();
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenThrow(RecipeException.class);
         assertThrows(RecipeException.class,
                 () -> recipeServiceImpl.createRecipe(recipeDTO)
@@ -169,7 +170,7 @@ class RecipeServiceImplTest {
 
         assertThrows(RecipeException.class,
                 () -> recipeServiceImpl.updateRecipe(recipeDTO)
-        ).getMessage();
+        );
         Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
     }
 
@@ -182,14 +183,12 @@ class RecipeServiceImplTest {
         SearchSpecification<Recipe> specification = new SearchSpecification<>(searchRequest);
         lenient().when(recipeRepository.findAll(specification)).thenReturn(recipeList);
         recipeServiceImpl.getRecipeByDynamicFilter(searchRequest);
-        verify(recipeRepository, times(1)).findAll(Mockito.any(SearchSpecification.class));
+        verify(recipeRepository, times(1)).findAll((Specification<Recipe>) any());
     }
 
     @Test
     @DisplayName("Should throw recipe exception when try to get recipe by invalid filter")
     void shouldThrowExceptionWhenTryingToGetRecipesByInvalidFilter() {
-        List<Recipe> recipeList = new ArrayList<>();
-        recipeList.add(buildRecipe());
         var searchRequest = buildSearchRequest();
         lenient().when(recipeRepository.findAll((Specification<Recipe>) any())).thenThrow(RecipeException.class);
         assertThrows(RecipeException.class,

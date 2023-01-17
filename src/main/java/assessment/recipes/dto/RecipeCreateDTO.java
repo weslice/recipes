@@ -16,11 +16,8 @@ import java.io.Serializable;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class RecipeDTO implements Serializable {
-    private static final long serialVersionUID = 5848407641740953840L;
-
-    @Schema( type = "int", example = "3", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long id;
+public class RecipeCreateDTO implements Serializable {
+    private static final long serialVersionUID = 8341352187912478214L;
 
     @Schema( type = "string", example = "Lemon Pie", requiredMode = Schema.RequiredMode.REQUIRED)
     private String recipeName;
@@ -38,14 +35,13 @@ public class RecipeDTO implements Serializable {
     private Boolean isVegetarian;
 
 
-    public static RecipeDTO convertEntityToDTO(Recipe recipe) {
-        return RecipeDTO.builder()
-                .id(recipe.getId())
-                .recipeName(recipe.getRecipeName())
-                .ingredients(recipe.getIngredients())
-                .instructions(recipe.getInstructions())
-                .numberServings(recipe.getNumberServings())
-                .isVegetarian(recipe.getIsVegetarian()).build();
+    public static Recipe recipeBuilderDTOToEntity(RecipeCreateDTO recipeDTO) {
+        return Recipe.builder()
+                .recipeName(recipeDTO.getRecipeName())
+                .ingredients(recipeDTO.getIngredients())
+                .instructions(recipeDTO.getInstructions())
+                .numberServings(recipeDTO.getNumberServings())
+                .isVegetarian(recipeDTO.getIsVegetarian()).build();
     }
 
 }

@@ -1,4 +1,4 @@
-package assessment.recipes.dto.querry;
+package assessment.recipes.dto.specificationFilters;
 
 import jakarta.persistence.criteria.*;
 

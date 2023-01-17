@@ -1,14 +1,15 @@
 package assessment.recipes.service;
 
+import assessment.recipes.dto.RecipeCreateDTO;
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
-import assessment.recipes.dto.querry.SearchRequest;
+import assessment.recipes.dto.specificationFilters.SearchRequest;
 
 import java.util.List;
 
 public interface RecipeService {
 
-     ResponseDTO createRecipe(RecipeDTO recipeDTO);
+     ResponseDTO createRecipe(RecipeCreateDTO recipeDTO);
 
      ResponseDTO deleteRecipe(String recipeId);
 

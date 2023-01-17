@@ -1,6 +1,6 @@
 package assessment.recipes.enumerator;
 
-import assessment.recipes.dto.querry.FilterRequest;
+import assessment.recipes.dto.specificationFilters.FilterRequest;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
