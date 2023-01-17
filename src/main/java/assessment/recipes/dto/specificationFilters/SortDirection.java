@@ -1,8 +1,8 @@
 package assessment.recipes.dto.specificationFilters;
 
-import jakarta.persistence.criteria.*;
-
-
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
 public enum SortDirection {
 
     ASC {

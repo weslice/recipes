@@ -12,9 +12,9 @@ import assessment.recipes.service.RecipeService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,7 +23,7 @@ public class RecipeServiceImpl implements RecipeService {
     private RecipeRepository recipeRepository;
 
     @Override
-    public ResponseDTO createRecipe(RecipeCreateDTO recipeDTO) {
+    public ResponseDTO create(RecipeCreateDTO recipeDTO) {
         try {
             var recipe = RecipeCreateDTO.recipeBuilderDTOToEntity(recipeDTO);
             recipe = recipeRepository.save(recipe);
@@ -36,10 +36,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseDTO deleteRecipe(String recipeId) {
+    public ResponseDTO delete(String recipeId) {
         var recipe = recipeRepository.findById(Long.valueOf(recipeId)).orElse(null);
-        if (recipe == null)
+
+        if (recipe == null) {
             throw new RecipeException("Recipe not found");
+        }
 
         recipeRepository.delete(recipe);
         return new ResponseDTO(Collections.emptyList(),
@@ -48,11 +50,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseDTO updateRecipe(RecipeDTO recipeDTO) {
+    public ResponseDTO update(RecipeDTO recipeDTO) {
         try {
             var recipeTobeUpdated = recipeRepository.findById(recipeDTO.getId()).orElse(null);
-            if (recipeTobeUpdated == null)
+
+            if (recipeTobeUpdated == null) {
                 throw new RecipeException("Recipe not found");
+            }
 
             recipeTobeUpdated.setRecipeName(recipeDTO.getRecipeName());
             recipeTobeUpdated.setNumberServings(recipeDTO.getNumberServings());
@@ -74,10 +78,10 @@ public class RecipeServiceImpl implements RecipeService {
     public List<RecipeDTO> getRecipeByDynamicFilter(SearchRequest searchRequest) {
         try {
             SearchSpecification<Recipe> specification = new SearchSpecification<>(searchRequest);
-            var recipeList = recipeRepository.findAll(specification);
-            List<RecipeDTO> returnRecipeList = new ArrayList<>();
-            recipeList.forEach(recipe -> returnRecipeList.add(RecipeDTO.convertEntityToDTO(recipe)));
-            return returnRecipeList;
+            return recipeRepository
+                    .findAll(specification)
+                    .stream()
+                    .map(RecipeDTO::convertEntityToDTO).collect(Collectors.toList());
         }  catch (Exception e) {
             throw new RecipeException(e.getMessage());
         }

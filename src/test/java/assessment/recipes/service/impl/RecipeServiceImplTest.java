@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class RecipeServiceImplTest {
 
@@ -95,7 +94,7 @@ class RecipeServiceImplTest {
         var recipeDTO = createRecipeDTO();
         Recipe recipeSave = new Recipe();
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(recipeSave);
-        var returnResponse = recipeServiceImpl.createRecipe(recipeDTO);
+        var returnResponse = recipeServiceImpl.create(recipeDTO);
         assertEquals(returnResponse.getMessage(),"Recipe Created!");
         verify(recipeRepository, times(1)).save(Mockito.any(Recipe.class));
     }
@@ -106,7 +105,7 @@ class RecipeServiceImplTest {
         var recipeDTO = new RecipeCreateDTO();
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenThrow(RecipeException.class);
         assertThrows(RecipeException.class,
-                () -> recipeServiceImpl.createRecipe(recipeDTO)
+                () -> recipeServiceImpl.create(recipeDTO)
         );
     }
 
@@ -116,7 +115,7 @@ class RecipeServiceImplTest {
         var recipeId = "1";
         Recipe recipe = new Recipe();
         Mockito.when(recipeRepository.findById(any())).thenReturn(Optional.of(recipe));
-        var returnResponse = recipeServiceImpl.deleteRecipe(recipeId);
+        var returnResponse = recipeServiceImpl.delete(recipeId);
         Mockito.verify(recipeRepository, times(1)).delete(recipe);
         assertEquals(returnResponse.getMessage(),"Recipe Deleted!");
     }
@@ -126,7 +125,7 @@ class RecipeServiceImplTest {
     void shouldNotDeleteRecipeAndThrowsException() {
         Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
         var msg = assertThrows(RecipeException.class,
-                () -> recipeServiceImpl.deleteRecipe("1")
+                () -> recipeServiceImpl.delete("1")
         ).getMessage();
         assertEquals(msg,"Recipe not found");
         Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
@@ -141,7 +140,7 @@ class RecipeServiceImplTest {
         Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
         Recipe recipeSave = new Recipe();
         Mockito.when(recipeRepository.save(any(Recipe.class))).thenReturn(recipeSave);
-        var returnResponse = recipeServiceImpl.updateRecipe(recipeDTO);
+        var returnResponse = recipeServiceImpl.update(recipeDTO);
         assertEquals(returnResponse.getMessage(),"Recipe Updated!");
         verify(recipeRepository, times(1)).save(Mockito.any(Recipe.class));
     }
@@ -153,7 +152,7 @@ class RecipeServiceImplTest {
         recipeDTO.setId(1L);
         Mockito.when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
         var msg = assertThrows(RecipeException.class,
-                () -> recipeServiceImpl.updateRecipe(recipeDTO)
+                () -> recipeServiceImpl.update(recipeDTO)
         ).getMessage();
         assertEquals(msg,"Recipe not found");
         Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
@@ -169,7 +168,7 @@ class RecipeServiceImplTest {
         Mockito.when(recipeRepository.save(recipe)).thenThrow(RecipeException.class);
 
         assertThrows(RecipeException.class,
-                () -> recipeServiceImpl.updateRecipe(recipeDTO)
+                () -> recipeServiceImpl.update(recipeDTO)
         );
         Mockito.verify(recipeRepository, times(0)).delete(any(Recipe.class));
     }

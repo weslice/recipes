@@ -36,7 +36,7 @@ public class RecipeController {
     @PostMapping(value = "/create")
     public ResponseEntity<ResponseDTO> createRecipe(@RequestBody RecipeCreateDTO recipe) {
         try {
-            return new ResponseEntity<>(recipeServiceImpl.createRecipe(recipe), HttpStatus.CREATED);
+            return new ResponseEntity<>(recipeServiceImpl.create(recipe), HttpStatus.CREATED);
         } catch (RecipeException e) {
             var errorResponse = new ResponseDTO(null, Collections.singletonList(e.getMessage()), e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -58,10 +58,9 @@ public class RecipeController {
                     format = "int64",
                     description = "ID of recipe that needs to be deleted",
                     defaultValue = "1, 2, 3, ..."),
-            required = true)
-                                                     @PathVariable("recipeId") String recipeId) {
+            required = true) @PathVariable("recipeId") String recipeId) {
         try {
-            return new ResponseEntity<>(recipeServiceImpl.deleteRecipe(recipeId), HttpStatus.OK);
+            return new ResponseEntity<>(recipeServiceImpl.delete(recipeId), HttpStatus.OK);
         } catch (RecipeException e) {
             var errorResponse = new ResponseDTO(null, Collections.singletonList(e.getMessage()), e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -78,14 +77,14 @@ public class RecipeController {
     @PatchMapping(value = "/update")
     public ResponseEntity<ResponseDTO> updateRecipe(@RequestBody RecipeDTO recipeDTO) {
         try {
-            return new ResponseEntity<>(recipeServiceImpl.updateRecipe(recipeDTO), HttpStatus.OK);
+            return new ResponseEntity<>(recipeServiceImpl.update(recipeDTO), HttpStatus.OK);
         } catch (RecipeException re) {
             var errorResponse = new ResponseDTO(null, Collections.singletonList(re.getMessage()), re.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @Operation(summary = "Get a recipe in the database from filter request")
+    @Operation(summary = "Recipe filter as requested by the user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     content = { @Content(mediaType = "application/json",

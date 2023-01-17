@@ -11,10 +11,10 @@ import org.springframework.context.annotation.PropertySource;
 		"classpath:application-local.properties"
 })
 @OpenAPIDefinition(info = @Info(title = "Recipes API", version = "1.0", description = "REST API to insert, update, delete and filter recipes"))
-public class AbnAmroAssessmentApplication {
+public class RecipeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AbnAmroAssessmentApplication.class, args);
+		SpringApplication.run(RecipeApplication.class, args);
 	}
 
 }

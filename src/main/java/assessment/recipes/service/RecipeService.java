@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface RecipeService {
 
-     ResponseDTO createRecipe(RecipeCreateDTO recipeDTO);
+     ResponseDTO create(RecipeCreateDTO recipeDTO);
 
-     ResponseDTO deleteRecipe(String recipeId);
+     ResponseDTO delete(String recipeId);
 
-     ResponseDTO updateRecipe(RecipeDTO recipeDTO);
+     ResponseDTO update(RecipeDTO recipeDTO);
 
     List<RecipeDTO> getRecipeByDynamicFilter(SearchRequest searchRequest);
 }

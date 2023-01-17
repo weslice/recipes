@@ -6,7 +6,7 @@ The cool thing is that the filter works dynamically!! For that I used Spring Dat
 With JPA specification I don't need to write queries or implement get methods in the repository, as you can see my repository is clean:
 ![Repository](images/recipe-repository.png)
 And the implementation of the filter in service class:
-![Repository](images/service-filter.png)
+![Repository](images/get-recipe-filter.png)
 
 
 I implemented it with Spring Boot, Spring Data, Lombok, PostgreSQL Driver and H2 Database for the integration test
@@ -36,7 +36,7 @@ For my configuration I used the default username and password.
 You can execute/run the project with Spring Boot
 
 After running the application you can check the REST API documentation here: http://localhost:8080/swagger-ui/index.html
-![Swagger Documentation](images/swagger1.png)
+![Swagger Documentation](images/swagger-api.png)
 
 Here you can check all the rest endpoints for:
 Create a recipe
