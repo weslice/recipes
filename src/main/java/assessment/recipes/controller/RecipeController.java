@@ -2,6 +2,7 @@ package assessment.recipes.controller;
 
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
+import assessment.recipes.dto.querry.SearchRequest;
 import assessment.recipes.exception.RecipeException;
 import assessment.recipes.service.impl.RecipeServiceImpl;
 import lombok.AllArgsConstructor;
@@ -47,7 +48,14 @@ public class RecipeController {
         }
     }
 
-
-
+    @PostMapping(value = "/filter")
+    public ResponseEntity<?> getRecipesByFilters(@RequestBody SearchRequest searchRequest) {
+        try {
+            return new ResponseEntity<>(recipeServiceImpl.getRecipeByDynamicFilter(searchRequest), HttpStatus.OK);
+        } catch (RecipeException re) {
+            var errorResponse = new ResponseDTO(null, Collections.singletonList(re.getMessage()), re.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

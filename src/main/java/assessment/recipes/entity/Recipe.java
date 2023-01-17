@@ -31,5 +31,4 @@ public class Recipe {
     @Column(name = "vegetarian", nullable = false)
     private Boolean isVegetarian;
 
-
 }

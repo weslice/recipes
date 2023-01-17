@@ -11,6 +11,9 @@ import java.util.List;
 @Data
 @ToString
 public class ResponseDTO implements Serializable {
+
+    private static final long serialVersionUID = 6905214817937047932L;
+
     private Object response;
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PUBLIC)

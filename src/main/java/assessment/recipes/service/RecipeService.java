@@ -2,9 +2,8 @@ package assessment.recipes.service;
 
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
-import assessment.recipes.exception.RecipeException;
+import assessment.recipes.dto.querry.SearchRequest;
 
-import java.util.Collections;
 import java.util.List;
 
 public interface RecipeService {
@@ -15,6 +14,5 @@ public interface RecipeService {
 
      ResponseDTO updateRecipe(RecipeDTO recipeDTO);
 
-     List<RecipeDTO> getRecipeByDynamicFilter();
-
+    List<RecipeDTO> getRecipeByDynamicFilter(SearchRequest searchRequest);
 }

@@ -2,12 +2,16 @@ package assessment.recipes.service.impl;
 
 import assessment.recipes.dto.RecipeDTO;
 import assessment.recipes.dto.ResponseDTO;
+import assessment.recipes.dto.querry.SearchRequest;
+import assessment.recipes.dto.querry.SearchSpecification;
+import assessment.recipes.entity.Recipe;
 import assessment.recipes.exception.RecipeException;
 import assessment.recipes.repository.RecipeRepository;
 import assessment.recipes.service.RecipeService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,7 +59,7 @@ public class RecipeServiceImpl implements RecipeService {
             recipeTobeUpdated.setIngredients(recipeDTO.getIngredients());
             recipeTobeUpdated.setInstructions(recipeDTO.getInstructions());
 
-           recipeTobeUpdated = recipeRepository.save(recipeTobeUpdated);
+            recipeTobeUpdated = recipeRepository.save(recipeTobeUpdated);
 
             return new ResponseDTO(RecipeDTO.convertEntityToDTO(recipeTobeUpdated),
                     Collections.emptyList(),
@@ -66,7 +70,15 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeDTO> getRecipeByDynamicFilter() {
-        return null;
+    public List<RecipeDTO> getRecipeByDynamicFilter(SearchRequest searchRequest) {
+        try {
+            SearchSpecification<Recipe> specification = new SearchSpecification<>(searchRequest);
+            var recipeList = recipeRepository.findAll(specification);
+            List<RecipeDTO> returnRecipeList = new ArrayList<>();
+            recipeList.forEach(recipe -> returnRecipeList.add(RecipeDTO.convertEntityToDTO(recipe)));
+            return returnRecipeList;
+        }  catch (Exception e) {
+            throw new RecipeException(e.getMessage());
+        }
     }
 }

@@ -1,22 +1,23 @@
 package assessment.recipes.dto;
 
 import assessment.recipes.entity.Recipe;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.Column;
 import lombok.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.io.Serializable;
-import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RecipeDTO implements Serializable {
-
+    private static final long serialVersionUID = 5848407641740953840L;
     private Long id;
+
     private String recipeName;
 
     private String ingredients;
