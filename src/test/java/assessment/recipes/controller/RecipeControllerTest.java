@@ -329,7 +329,6 @@ public class RecipeControllerTest {
                                 .andReturn()
                                 .getResponse().getContentAsString(),
                         ResponseDTO.class);
-//        assertEquals(responseDTO.getMessage(),"not-null property references a null or transient value : assessment.recipes.entity.Recipe.instructions");
         assertEquals(responseDTO.getMessage(),"could not execute statement; SQL [n/a]; constraint [null]");
     }
 
